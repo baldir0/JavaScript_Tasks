@@ -1,19 +1,24 @@
 class Switch {
-	#cases = [];
-	#conditions = [];
+	cases = [];
+	conditions = [];
 	
 	add(condition, callback) {
-		if (typeof condition !== 'boolean') return
+		if (typeof condition !== 'boolean') throw new Error('Condition expected to be a boolean')
+		if (typeof callback !== 'function') throw new Error('Callback expected to be a function')
 		
-		this.#conditions.push(condition);
-		this.#cases.push(callback);
+		this.conditions.push(condition);
+		this.cases.push(callback);
 	}
 	
 	validate() {
-		for (let i in this.#cases) {
-			if (this.#conditions[i]) this.#cases[i]();
+		let res = true;
+		while(this.cases.length) {
+			if (this.conditions.pop()) {
+				this.cases.pop()();
+				res = false;
+			}
 		}
-		return;
+		return res;
 	}
 }
 
@@ -28,4 +33,5 @@ formChecker.add(value.length < 5, ()=>{
     console.error('value is to short')
 })
 
-formChecker.validate();
+console.log(formChecker.validate());
+console.log(formChecker.cases.length)
